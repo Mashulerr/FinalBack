@@ -1,0 +1,966 @@
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1739974970251)
++++ b/.idea/vcs.xml	(date 1739974970251)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/main/java/org/example/service/impl/UserDataServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/service/impl/UserDataServiceImpl.java b/src/main/java/org/example/service/impl/UserDataServiceImpl.java
+new file mode 100644
+--- /dev/null	(date 1739984863576)
++++ b/src/main/java/org/example/service/impl/UserDataServiceImpl.java	(date 1739984863576)
+@@ -0,0 +1,30 @@
++package org.example.service.impl;
++
++import lombok.RequiredArgsConstructor;
++import org.example.entity.User;
++import org.example.repository.UserRepository;
++import org.springframework.security.core.userdetails.UserDetails;
++import org.springframework.security.core.userdetails.UserDetailsService;
++import org.springframework.security.core.userdetails.UsernameNotFoundException;
++import org.springframework.stereotype.Service;
++
++import java.util.Optional;
++
++@Service
++@RequiredArgsConstructor
++public class UserDataServiceImpl implements UserDetailsService {
++
++    private final UserRepository userRepository;
++
++
++    @Override
++    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
++        Optional<User> optionalUser = userRepository.findByUsername(s);
++
++
++        if(optionalUser.isEmpty()){
++            throw new UsernameNotFoundException("User not found! ");
++        }
++        return optionalUser.get();
++    }
++}
+\ No newline at end of file
+Index: src/main/java/org/example/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/Main.java b/src/main/java/org/example/Main.java
+new file mode 100644
+--- /dev/null	(date 1739980199732)
++++ b/src/main/java/org/example/Main.java	(date 1739980199732)
+@@ -0,0 +1,19 @@
++package org.example;
++
++//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
++// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
++import org.springframework.boot.SpringApplication;
++import org.springframework.boot.autoconfigure.SpringBootApplication;
++import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
++
++@SpringBootApplication
++public class Main {
++    public static void main(String[] args) {
++        SpringApplication.run(Main.class, args);
++
++        BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
++        String p1 = bc.encode("password");
++        System.out.println(p1);
++
++    }
++}
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1739974970196)
++++ b/.idea/.gitignore	(date 1739974970196)
+@@ -0,0 +1,3 @@
++# Default ignored files
++/shelf/
++/workspace.xml
+Index: src/main/java/org/example/service/impl/UserServiceImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/service/impl/UserServiceImpl.java b/src/main/java/org/example/service/impl/UserServiceImpl.java
+new file mode 100644
+--- /dev/null	(date 1739988268420)
++++ b/src/main/java/org/example/service/impl/UserServiceImpl.java	(date 1739988268420)
+@@ -0,0 +1,97 @@
++package org.example.service.impl;
++
++import lombok.RequiredArgsConstructor;
++import org.example.dto.UserDTO;
++import org.example.entity.User;
++import org.example.exception.UserAlreadyExistsException;
++import org.example.exception.UserNotFoundException;
++import org.example.repository.UserRepository;
++import org.example.service.UserService;
++import org.example.utils.UserMapper;
++import org.springframework.security.crypto.password.PasswordEncoder;
++import org.springframework.stereotype.Service;
++import org.springframework.transaction.annotation.Transactional;
++import org.example.dto.UserRegisterDTO;
++import java.util.List;
++import java.util.Optional;
++import java.util.stream.Collectors;
++import org.springframework.security.access.prepost.PreAuthorize;
++
++@Service
++@RequiredArgsConstructor
++public class UserServiceImpl implements UserService {
++
++    private final UserRepository userRepository;
++    private final PasswordEncoder passwordEncoder;
++
++
++    @Override
++    public UserDTO getUserByUsername(String username) {
++        Optional<User> userOptional = userRepository.findByUsername(username);
++
++        if (userOptional.isEmpty()) throw new UserNotFoundException("User with username " + username + " not found");
++        return UserMapper.convertToDto(userOptional.get());
++    }
++
++    @Override
++    public List<UserDTO> getAllUsers(){
++        return userRepository.findAll().stream()
++                .map(UserMapper::convertToDto)
++                .collect(Collectors.toList());
++    }
++
++    @Override
++    public UserDTO getUserById(Long id){
++
++        return userRepository.findById(id)
++                .map(UserMapper::convertToDto)
++                .orElseThrow(() -> new UserNotFoundException("User not found!")) ;
++    }
++
++    @Override
++    public UserDTO createUser(UserRegisterDTO dto) {
++
++        if (userRepository.findByUsername(dto.getUsername()).isPresent())
++            throw new UserAlreadyExistsException("Username already exists");
++
++        User user = new User();
++        user.setName(dto.getName());
++        user.setUsername(dto.getUsername());
++        user.setEmail(dto.getEmail());
++        user.setPhone(dto.getPhone());
++        user.setPassword(passwordEncoder.encode(dto.getPassword()));
++
++
++
++        return UserMapper.convertToDto(userRepository.save(user));
++    }
++
++
++    @Override
++    public UserDTO updateUser(Long id, UserDTO dto){
++        User user = userRepository.findById(id)
++                .orElseThrow(() -> new UserNotFoundException("User not found!"));
++
++        if(userRepository.findByUsername(dto.getUsername()).isPresent())
++            throw new UserAlreadyExistsException("Username already exists!");
++
++        user.setName(dto.getName());
++        user.setEmail(dto.getEmail());
++        user.setUsername(dto.getUsername());
++        user.setPhotoUrl(dto.getPhotoUrl());
++        user.setPhone(dto.getPhone());
++
++        return UserMapper.convertToDto(userRepository.save(user));
++
++    }
++
++    @Override
++    @Transactional(readOnly = false)
++    public void deleteUser(Long id){
++        System.out.println("Delete: " + id);
++
++        userRepository.deleteUserById(id);
++    }
++
++
++}
+\ No newline at end of file
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+--- /dev/null	(date 1739979411623)
++++ b/pom.xml	(date 1739979411623)
+@@ -0,0 +1,72 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++
++    <groupId>org.example</groupId>
++    <artifactId>Android-Bootcamp-2025-Backend</artifactId>
++    <version>1.0-SNAPSHOT</version>
++
++    <properties>
++        <maven.compiler.source>11</maven.compiler.source>
++        <maven.compiler.target>11</maven.compiler.target>
++        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++    </properties>
++
++
++    <parent>
++        <groupId>org.springframework.boot</groupId>
++        <artifactId>spring-boot-starter-parent</artifactId>
++        <version>2.5.5</version>
++    </parent>
++
++    <dependencies>
++        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
++        <dependency>
++            <groupId>com.h2database</groupId>
++            <artifactId>h2</artifactId>
++
++        </dependency>
++
++        <!-- https://mvnrepository.com/artifact/org.liquibase/liquibase-core -->
++        <dependency>
++            <groupId>org.liquibase</groupId>
++            <artifactId>liquibase-core</artifactId>
++
++        </dependency>
++
++
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-web</artifactId>
++
++        </dependency>
++
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-data-jpa</artifactId>
++
++        </dependency>
++
++        <dependency>
++            <groupId>org.projectlombok</groupId>
++            <artifactId>lombok</artifactId>
++            <version>1.18.30</version>
++        </dependency>
++
++        <dependency>
++            <groupId>org.springdoc</groupId>
++            <artifactId>springdoc-openapi-ui</artifactId>
++            <version>1.7.0</version>
++        </dependency>
++
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-security</artifactId>
++
++        </dependency>
++
++    </dependencies>
++
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1739974970243)
++++ b/.idea/misc.xml	(date 1739974970243)
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
++  <component name="MavenProjectsManager">
++    <option name="originalFiles">
++      <list>
++        <option value="$PROJECT_DIR$/pom.xml" />
++      </list>
++    </option>
++  </component>
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="21" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/out" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv b/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv
+new file mode 100644
+--- /dev/null	(date 1739987118286)
++++ b/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv	(date 1739987118286)
+@@ -0,0 +1,2 @@
++name;username;email;phone;password;photo_url
++masha;mashullr;abk.08;4323542;$2a$10$EXRo8ZwxLe5kdkHu0fIxkOPOnL1RoOVOTz/EVULKE5R5QwCBGQ0TS;ссылка на фото
+\ No newline at end of file
+Index: src/main/java/org/example/config/WebSecurityConfig.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/config/WebSecurityConfig.java b/src/main/java/org/example/config/WebSecurityConfig.java
+new file mode 100644
+--- /dev/null	(date 1739985652602)
++++ b/src/main/java/org/example/config/WebSecurityConfig.java	(date 1739985652602)
+@@ -0,0 +1,52 @@
++package org.example.config;
++
++
++import lombok.RequiredArgsConstructor;
++import org.springframework.context.annotation.Bean;
++import org.springframework.context.annotation.Configuration;
++import org.springframework.security.authentication.AuthenticationManager;
++import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
++import org.springframework.security.config.annotation.web.builders.HttpSecurity;
++import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
++import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
++import org.springframework.security.core.userdetails.UserDetailsService;
++import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
++import org.springframework.security.crypto.password.PasswordEncoder;
++
++@Configuration
++@EnableWebSecurity
++@RequiredArgsConstructor
++public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
++
++    private final UserDetailsService userDetailsService;
++
++    @Override
++    protected void configure(HttpSecurity http) throws Exception{
++        http
++                .csrf().disable()
++                .authorizeRequests()
++                .antMatchers("/h2-console/**").permitAll()
++                .antMatchers("/api/person/register").permitAll()
++                .antMatchers("/api/person/username/{username}").permitAll()
++                //.antMatchers("/api/person/authority/**").hasAuthority("ROLE_ADMIN")
++
++                .anyRequest().authenticated()
++                .and()
++                .httpBasic()
++                .and()
++                .headers().frameOptions().disable();
++
++    }
++
++
++    @Override
++    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
++        auth.userDetailsService(userDetailsService)
++                .passwordEncoder((passwordEncoder()));
++    }
++
++    @Bean
++    public PasswordEncoder passwordEncoder(){
++        return new BCryptPasswordEncoder();
++    }
++}
+\ No newline at end of file
+Index: src/main/java/org/example/dto/UserRegisterDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/dto/UserRegisterDTO.java b/src/main/java/org/example/dto/UserRegisterDTO.java
+new file mode 100644
+--- /dev/null	(date 1739981701870)
++++ b/src/main/java/org/example/dto/UserRegisterDTO.java	(date 1739981701870)
+@@ -0,0 +1,16 @@
++package org.example.dto;
++
++import lombok.Data;
++
++@Data
++public class UserRegisterDTO {
++
++
++    private String name;
++    private String username;
++    private String password;
++    private String phone;
++    private String email;
++    private String photoUrl;
++
++}
+\ No newline at end of file
+Index: src/main/java/org/example/repository/UserRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/repository/UserRepository.java b/src/main/java/org/example/repository/UserRepository.java
+new file mode 100644
+--- /dev/null	(date 1739984947964)
++++ b/src/main/java/org/example/repository/UserRepository.java	(date 1739984947964)
+@@ -0,0 +1,20 @@
++package org.example.repository;
++
++
++import org.example.entity.User;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.data.jpa.repository.Modifying;
++import org.springframework.data.jpa.repository.Query;
++
++import java.util.List;
++import java.util.Optional;
++
++public interface UserRepository extends JpaRepository<User, Long> {
++    Optional<User> findByUsername(String username);
++
++    @Modifying
++    @Query(value = "DELETE FROM user WHERE id = ?1", nativeQuery = true)
++    void deleteUserById(long id);
++
++
++}
+\ No newline at end of file
+Index: src/main/java/org/example/dto/UserDTO.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/dto/UserDTO.java b/src/main/java/org/example/dto/UserDTO.java
+new file mode 100644
+--- /dev/null	(date 1739987769471)
++++ b/src/main/java/org/example/dto/UserDTO.java	(date 1739987769471)
+@@ -0,0 +1,17 @@
++package org.example.dto;
++
++import lombok.Data;
++
++@Data
++public class UserDTO {
++    private long id;
++    private String phone;
++    private String name;
++    private String username;
++    private String email;
++    private String photoUrl;
++
++
++
++}
++
+Index: src/main/java/org/example/entity/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/entity/User.java b/src/main/java/org/example/entity/User.java
+new file mode 100644
+--- /dev/null	(date 1739987118274)
++++ b/src/main/java/org/example/entity/User.java	(date 1739987118274)
+@@ -0,0 +1,80 @@
++package org.example.entity;
++
++
++import javax.persistence.*;
++import lombok.Data;
++
++
++import org.springframework.security.core.GrantedAuthority;
++import org.springframework.security.core.userdetails.UserDetails;
++
++
++import java.util.Collection;
++import java.util.List;
++
++@Entity
++@Data
++@Table(name="user")
++public class User implements UserDetails {
++
++    @Id
++    @GeneratedValue(strategy = GenerationType.IDENTITY)
++    @Column(name = "id")
++    private long id;
++
++
++    @Column(name = "name")
++    private String name;
++
++    @Column(name = "email")
++    private String email;
++
++    @Column(name = "photo_url")
++    private String photoUrl;
++
++    @Column(name = "username")
++    private String username;
++
++    @Column(name = "password")
++    private String password;
++
++    @Column(name = "phone")
++    private String phone;
++
++
++    @Override
++    public Collection<? extends GrantedAuthority> getAuthorities() {
++        return List.of();
++    }
++
++    @Override
++    public String getPassword() {
++        return password;
++    }
++
++    @Override
++    public String getUsername() {
++        return username;
++    }
++
++
++    @Override
++    public boolean isAccountNonExpired() {
++        return true;
++    }
++
++    @Override
++    public boolean isAccountNonLocked() {
++        return true;
++    }
++
++    @Override
++    public boolean isCredentialsNonExpired() {
++        return true;
++    }
++
++    @Override
++    public boolean isEnabled() {
++        return true;
++    }
++}
+Index: src/main/resources/db.changelog/db.changelog-master.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/db.changelog/db.changelog-master.xml b/src/main/resources/db.changelog/db.changelog-master.xml
+new file mode 100644
+--- /dev/null	(date 1739977148815)
++++ b/src/main/resources/db.changelog/db.changelog-master.xml	(date 1739977148815)
+@@ -0,0 +1,13 @@
++<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
++                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
++                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
++                   http://www.liquibase.org/xml/ns/dbchangelog-ext  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
++
++
++
++    <include file="db.changelog/1.0/2025-02-19--0001-user.xml"/>
++    <include file="db.changelog/data/2025-02-19--0001-user-data.xml"/>
++
++
++</databaseChangeLog>
+\ No newline at end of file
+Index: src/main/resources/application.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/application.yml b/src/main/resources/application.yml
+new file mode 100644
+--- /dev/null	(date 1739980722201)
++++ b/src/main/resources/application.yml	(date 1739980722201)
+@@ -0,0 +1,22 @@
++server:
++  port : 8080
++
++spring:
++  datasource:
++    url: jdbc:h2:mem:testdb
++
++  h2:
++    console:
++      enabled: true
++
++  liquibase:
++    enabled: true
++    change-log: classpath:db.changelog/db.changelog-master.xml
++
++  jpa:
++    generate-ddl: false
++    hibernate:
++      ddl-auto: none
++
++    show-sql: true
++
+Index: src/main/resources/db.changelog/1.0/2025-02-19--0001-user.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/db.changelog/1.0/2025-02-19--0001-user.xml b/src/main/resources/db.changelog/1.0/2025-02-19--0001-user.xml
+new file mode 100644
+--- /dev/null	(date 1739987118281)
++++ b/src/main/resources/db.changelog/1.0/2025-02-19--0001-user.xml	(date 1739987118281)
+@@ -0,0 +1,49 @@
++<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
++                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
++                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
++                   http://www.liquibase.org/xml/ns/dbchangelog-ext  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
++
++    <changeSet id="db.changelog/1.0/2025-02-19--0001-user" author="mabubakirova">
++        <preConditions>
++            <not>
++                <tableExists tableName="user"/>
++
++            </not>
++        </preConditions>
++        <createTable tableName="user">
++
++            <column name = "id" type="BIGINT" autoIncrement="true">
++                <constraints primaryKey="true" nullable="false"/>
++            </column>
++
++            <column name="name" type="VARCHAR(50)">
++                <constraints nullable="false"/>
++            </column>
++
++
++            <column name="email" type="VARCHAR(100)">
++                <constraints nullable="false" unique="true"/>
++            </column>
++
++            <column name="phone" type="VARCHAR(100)">
++                <constraints nullable="true" unique="true"/>
++            </column>
++
++            <column name="password" type="VARCHAR(255)">
++                <constraints nullable="false" unique="false"/>
++            </column>
++
++            <column name="username" type="VARCHAR(255)">
++                <constraints nullable="false" unique="true"/>
++            </column>
++
++
++            <column name="photo_url" type="VARCHAR(255)">
++                <constraints nullable="true" unique="false"/>
++            </column>
++
++        </createTable>
++
++    </changeSet>
++</databaseChangeLog>
+\ No newline at end of file
+Index: src/main/java/org/example/exception/handler/GlobalExceptionHandler.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/exception/handler/GlobalExceptionHandler.java b/src/main/java/org/example/exception/handler/GlobalExceptionHandler.java
+new file mode 100644
+--- /dev/null	(date 1739982710039)
++++ b/src/main/java/org/example/exception/handler/GlobalExceptionHandler.java	(date 1739982710039)
+@@ -0,0 +1,23 @@
++package org.example.exception.handler;
++
++import org.example.exception.UserAlreadyExistsException;
++import org.example.exception.UserNotFoundException;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.ControllerAdvice;
++import org.springframework.web.bind.annotation.ExceptionHandler;
++
++@ControllerAdvice
++public class GlobalExceptionHandler {
++
++
++    @ExceptionHandler(UserNotFoundException.class)
++    public ResponseEntity<String> handlePersonNotFoundException(UserNotFoundException e) {
++        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
++    }
++
++    @ExceptionHandler(UserAlreadyExistsException.class)
++    public ResponseEntity<String> handlePersonAlreadyExistsException(UserNotFoundException e) {
++        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
++    }
++}
+\ No newline at end of file
+Index: src/main/java/org/example/exception/UserAlreadyExistsException.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/exception/UserAlreadyExistsException.java b/src/main/java/org/example/exception/UserAlreadyExistsException.java
+new file mode 100644
+--- /dev/null	(date 1739982550244)
++++ b/src/main/java/org/example/exception/UserAlreadyExistsException.java	(date 1739982550244)
+@@ -0,0 +1,7 @@
++package org.example.exception;
++
++public class UserAlreadyExistsException extends RuntimeException {
++    public UserAlreadyExistsException(String message) {
++        super(message);
++    }
++}
+\ No newline at end of file
+Index: src/main/java/org/example/exception/UserNotFoundException.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/exception/UserNotFoundException.java b/src/main/java/org/example/exception/UserNotFoundException.java
+new file mode 100644
+--- /dev/null	(date 1739982590776)
++++ b/src/main/java/org/example/exception/UserNotFoundException.java	(date 1739982590776)
+@@ -0,0 +1,5 @@
++package org.example.exception;
++
++public class UserNotFoundException extends RuntimeException {
++    public UserNotFoundException(String message) {super(message);}
++}
+\ No newline at end of file
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+--- /dev/null	(date 1739974966524)
++++ b/.gitignore	(date 1739974966524)
+@@ -0,0 +1,38 @@
++target/
++!.mvn/wrapper/maven-wrapper.jar
++!**/src/main/**/target/
++!**/src/test/**/target/
++
++### IntelliJ IDEA ###
++.idea/modules.xml
++.idea/jarRepositories.xml
++.idea/compiler.xml
++.idea/libraries/
++*.iws
++*.iml
++*.ipr
++
++### Eclipse ###
++.apt_generated
++.classpath
++.factorypath
++.project
++.settings
++.springBeans
++.sts4-cache
++
++### NetBeans ###
++/nbproject/private/
++/nbbuild/
++/dist/
++/nbdist/
++/.nb-gradle/
++build/
++!**/src/main/**/build/
++!**/src/test/**/build/
++
++### VS Code ###
++.vscode/
++
++### Mac OS ###
++.DS_Store
+\ No newline at end of file
+Index: src/main/resources/db.changelog/data/2025-02-19--0001-user-data.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/db.changelog/data/2025-02-19--0001-user-data.xml b/src/main/resources/db.changelog/data/2025-02-19--0001-user-data.xml
+new file mode 100644
+--- /dev/null	(date 1739981245506)
++++ b/src/main/resources/db.changelog/data/2025-02-19--0001-user-data.xml	(date 1739981245506)
+@@ -0,0 +1,17 @@
++<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
++                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
++                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
++                   http://www.liquibase.org/xml/ns/dbchangelog-ext  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
++
++    <changeSet id="db.changelog/data/2025-02-19--0001-user-data" author="mabubakirova">
++        <loadData tableName="user" file="db.changelog/data/csv/2025-02-19--0001-user-data.csv"
++                  separator=";"
++                  quotchar="*"
++                  encoding="UTF-8"/>
++
++
++    </changeSet>
++
++
++</databaseChangeLog>
+\ No newline at end of file
+Index: src/main/java/org/example/service/UserService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/service/UserService.java b/src/main/java/org/example/service/UserService.java
+new file mode 100644
+--- /dev/null	(date 1739984375758)
++++ b/src/main/java/org/example/service/UserService.java	(date 1739984375758)
+@@ -0,0 +1,20 @@
++package org.example.service;
++
++import org.example.dto.UserDTO;
++import org.example.dto.UserRegisterDTO;
++
++import java.util.List;
++
++public interface UserService {
++
++
++    List<UserDTO> getAllUsers();
++    UserDTO getUserById(Long id);
++    UserDTO createUser(UserRegisterDTO dto);
++    UserDTO updateUser(Long id, UserDTO dto);
++    void deleteUser(Long id);
++    UserDTO getUserByUsername(String username);
++
++
++
++}
+\ No newline at end of file
+Index: src/main/java/org/example/utils/UserMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/utils/UserMapper.java b/src/main/java/org/example/utils/UserMapper.java
+new file mode 100644
+--- /dev/null	(date 1739983340936)
++++ b/src/main/java/org/example/utils/UserMapper.java	(date 1739983340936)
+@@ -0,0 +1,21 @@
++package org.example.utils;
++
++import lombok.experimental.UtilityClass;
++import org.example.dto.UserDTO;
++import org.example.entity.User;
++
++@UtilityClass
++public class UserMapper {
++
++    public UserDTO convertToDto(User user){
++        UserDTO userDTO = new UserDTO();
++        userDTO.setId(user.getId());
++        userDTO.setUsername(user.getUsername());
++        userDTO.setName(user.getName());
++        userDTO.setPhotoUrl(user.getPhotoUrl());
++        userDTO.setEmail(user.getEmail());
++        userDTO.setPhone(user.getPhone());
++
++        return userDTO;
++    }
++}
+\ No newline at end of file
+Index: src/main/java/org/example/controller/UserController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/controller/UserController.java b/src/main/java/org/example/controller/UserController.java
+new file mode 100644
+--- /dev/null	(date 1739988268411)
++++ b/src/main/java/org/example/controller/UserController.java	(date 1739988268411)
+@@ -0,0 +1,63 @@
++package org.example.controller;
++
++import lombok.RequiredArgsConstructor;
++import org.springframework.security.core.Authentication;
++import org.example.dto.UserDTO;
++import org.example.dto.UserRegisterDTO;
++
++import org.example.service.UserService;
++import org.springframework.http.HttpStatus;
++import org.springframework.http.ResponseEntity;
++import org.springframework.web.bind.annotation.*;
++
++import javax.servlet.http.HttpSession;
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/person")
++@RequiredArgsConstructor
++public class UserController {
++
++    private final UserService personService;
++
++    @GetMapping
++    public List<UserDTO> getAllPersons() {
++        return personService.getAllUsers();
++    }
++
++    @GetMapping("/{id}")
++    public ResponseEntity<UserDTO> getPersonById(@PathVariable Long id) {
++        return ResponseEntity.ok(personService.getUserById(id));
++    }
++
++    @PostMapping("/register")
++    public ResponseEntity<UserDTO> createPerson(@RequestBody UserRegisterDTO dto) {
++        UserDTO createdUser  = personService.createUser (dto);
++        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser );
++
++    }
++
++    @PutMapping("/{id}")
++    public ResponseEntity<UserDTO> updatePerson(@PathVariable Long id, @RequestBody UserDTO dto) {
++        return ResponseEntity.ok(personService.updateUser(id, dto));
++    }
++
++    @DeleteMapping("/{id}")
++    public ResponseEntity<Void> deletePerson(@PathVariable Long id) {
++        personService.deleteUser(id);
++        return ResponseEntity.noContent().build();
++    }
++
++    @GetMapping("/username/{username}")
++    public ResponseEntity<String> getByUsername(@PathVariable String username) {
++        UserDTO userDTO = personService.getUserByUsername(username);
++        return ResponseEntity.ok("User " + userDTO.getUsername() + " is registered");
++    }
++
++    @GetMapping("/login")
++    public ResponseEntity<UserDTO> login(Authentication authentication) {
++        return ResponseEntity.ok(personService.getUserByUsername(authentication.getName()));
++    }
++
++
++}
+\ No newline at end of file
