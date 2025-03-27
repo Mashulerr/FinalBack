@@ -18,4 +18,15 @@ public class UserMapper {
 
         return userDTO;
     }
+
+    public static User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setId(userDTO.getId());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setName(userDTO.getName());
+        user.setPhotoUrl(userDTO.getPhotoUrl());
+
+        return user;
+    }
 }

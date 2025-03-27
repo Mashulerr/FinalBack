@@ -2,6 +2,8 @@ package org.example.entity;
 
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 
@@ -40,6 +42,10 @@ public class User implements UserDetails {
 
     @Column(name = "phone")
     private String phone;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Article> articles;
 
 
     @Override

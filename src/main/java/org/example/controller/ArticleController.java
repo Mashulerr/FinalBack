@@ -37,10 +37,9 @@ public class ArticleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
-        return articleRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseThrow(() -> new NewsNotFoundException("Новость с ID " + id + " не найдена"));
+    public ResponseEntity<ArticleDTO> getArticleById(@PathVariable Long id) {
+        ArticleDTO articleDTO = articleService.getArticleById(id);
+        return ResponseEntity.ok(articleDTO);
     }
 
     @PutMapping("/{id}")

@@ -8,19 +8,16 @@
         <preConditions>
             <not>
                 <tableExists tableName="user"/>
-
             </not>
         </preConditions>
         <createTable tableName="user">
-
-            <column name = "id" type="BIGINT" autoIncrement="true">
+            <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
 
             <column name="name" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-
 
             <column name="email" type="VARCHAR(100)">
                 <constraints nullable="false" unique="true"/>
@@ -31,19 +28,19 @@
             </column>
 
             <column name="password" type="VARCHAR(255)">
-                <constraints nullable="false" unique="false"/>
+                <constraints nullable="false"/>
             </column>
 
             <column name="username" type="VARCHAR(255)">
                 <constraints nullable="false" unique="true"/>
             </column>
 
-
             <column name="photo_url" type="VARCHAR(255)">
-                <constraints nullable="true" unique="false"/>
+                <constraints nullable="true"/>
             </column>
 
-        </createTable>
 
+
+        </createTable>
     </changeSet>
 </databaseChangeLog>
