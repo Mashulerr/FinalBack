@@ -4,20 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="91a34473-6dcd-44e6-9a87-a98c874770bc" name="Changes" comment="article">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/dto/ArticleDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/ArticleDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/dto/CommentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/CommentDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/Article.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Article.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Comment.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/CommentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ArticleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ArticleServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/CommentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/CommentServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/ArticleMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/ArticleMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/CommentMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/CommentMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/example/utils/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/example/utils/UserMapper.class" afterDir="false" />
-    </list>
+    <list default="true" id="91a34473-6dcd-44e6-9a87-a98c874770bc" name="Changes" comment="article" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
