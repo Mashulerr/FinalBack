@@ -9,7 +9,6 @@ import org.example.exception.ArticleNotFoundException;
 import org.example.exception.NewsNotFoundException;
 import org.example.exception.UnauthorizedException;
 import org.example.repository.ArticleRepository;
-import org.example.repository.UserRepository;
 import org.example.service.ArticleService;
 import org.example.service.UserService;
 import org.example.utils.ArticleMapper;
@@ -25,14 +24,14 @@ import java.util.stream.Collectors;
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
-    private final UserService userService; // Изменено на UserService
+    private final UserService userService;
 
     @Override
     public List<ArticleDTO> getAllArticles() {
         return articleRepository.findAll().stream()
                 .map(article -> {
-                    User user = article.getUser(); // Получаем пользователя из статьи
-                    return ArticleMapper.convertToDto(article, user); // Передаем пользователя
+                    User user = article.getUser();
+                    return ArticleMapper.convertToDto(article, user);
                 })
                 .collect(Collectors.toList());
     }
@@ -41,27 +40,26 @@ public class ArticleServiceImpl implements ArticleService {
     public ArticleDTO getArticleById(Long id) {
         return articleRepository.findById(id)
                 .map(article -> {
-                    User user = article.getUser (); // Получаем пользователя из статьи
-                    return ArticleMapper.convertToDto(article, user); // Преобразуем статью в DTO
+                    User user = article.getUser();
+                    return ArticleMapper.convertToDto(article, user);
                 })
-                .orElseThrow(() -> new ArticleNotFoundException("Article not found!")); // Исключение, если статья не найдена
+                .orElseThrow(() -> new ArticleNotFoundException("Article not found!"));
     }
 
     @Override
     public ArticleDTO createArticle(ArticleDTO articleDTO) throws UnauthorizedException {
-        Long userId = UserUtils.getCurrentUser_id(); // Предполагается, что у вас есть метод для получения текущего пользователя
-
+        Long userId = UserUtils.getCurrentUser_id();
         if (userId == null) {
             throw new UnauthorizedException("User  is not authenticated.");
         }
 
         UserDTO userDTO = userService.getUserById(userId);
-        User user = UserMapper.convertToEntity(userDTO); // Преобразуем UserDTO в User
+        User user = UserMapper.convertToEntity(userDTO);
 
-        Article article = ArticleMapper.convertToEntity(articleDTO, user); // Теперь передаем пользователя
+        Article article = ArticleMapper.convertToEntity(articleDTO, user);
         Article savedArticle = articleRepository.save(article);
 
-        return ArticleMapper.convertToDto(savedArticle, user); // Передаем пользователя
+        return ArticleMapper.convertToDto(savedArticle, user);
     }
 
     @Override
@@ -72,8 +70,8 @@ public class ArticleServiceImpl implements ArticleService {
         article.setTitle(dto.getTitle());
         article.setContent(dto.getContent());
 
-        User user = article.getUser (); // Получаем пользователя из статьи
-        return ArticleMapper.convertToDto(articleRepository.save(article), user); // Передаем пользователя
+        User user = article.getUser ();
+        return ArticleMapper.convertToDto(articleRepository.save(article), user);
     }
 
     @Override

@@ -5,47 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a34473-6dcd-44e6-9a87-a98c874770bc" name="Changes" comment="article">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/UserUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/CommentController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/ReactionController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/CommentDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/ReactionDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Comment.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Reaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/exception/ArticleNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/exception/CommentNotFoundException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/exception/UnauthorizedException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/repository/CommentRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/repository/ReactionRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/service/CommentService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/service/ReactionService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/CommentServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ReactionServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/CommentMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/ReactionMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/1.0/2025-22-03--0003-reaction.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/1.0/2025-22-03--0004-comment.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/2025-22-03--0004-comment-data.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/2025-22-03--003-reaction-data.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-22-03--0003-reaction-data.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-22-03--0004-comment-data.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/controller/ArticleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/controller/ArticleController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/dto/ArticleDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/ArticleDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/dto/CommentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/dto/CommentDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/Article.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Article.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/entity/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/entity/Comment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/CommentService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ArticleServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ArticleServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/CommentServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/CommentServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/ArticleMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/ArticleMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/CommentMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/CommentMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/UserMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/UserMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db.changelog/1.0/2025-02-19--0001-user.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/1.0/2025-02-19--0001-user.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db.changelog/1.0/2025-03-10--0002-article.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/1.0/2025-03-10--0002-article.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-03-10--0002-article-data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-03-10--0002-article-data.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db.changelog/db.changelog-master.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/db.changelog-master.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/db.changelog/1.0/2025-02-19--0001-user.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/db.changelog/1.0/2025-02-19--0001-user.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/db.changelog/data/csv/2025-02-19--0001-user-data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/db.changelog/data/csv/2025-02-19--0001-user-data.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/db.changelog/db.changelog-master.xml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/db.changelog/db.changelog-master.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/org/example/entity/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/example/entity/User.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/org/example/utils/UserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/org/example/utils/UserMapper.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -81,7 +51,6 @@
   &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="2tGOVLb8u7CFhh9ZLY7ySuBdn11" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -100,6 +69,13 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
 }</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

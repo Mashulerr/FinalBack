@@ -8,13 +8,12 @@ import java.util.List;
 
 @Data
 public class ArticleDTO {
-    private long id;
+    private Long id;
     private String title;
     private String content;
-    private List<Comment> comments;
-    private List<Reaction> reactions;
     private String username;
     private String photoUrl;
-
-
+    private int likes;
+    private int dislikes;
+    private List<CommentDTO> comments;
 }

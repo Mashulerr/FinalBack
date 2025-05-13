@@ -55,7 +55,6 @@ public class CommentServiceImpl implements CommentService {
         return CommentMapper.convertToDto(savedComment);
     }
 
-
     @Override
     public CommentDTO getCommentById(Long id) throws CommentNotFoundException {
         Comment comment = commentRepository.findById(id)
@@ -78,4 +77,3 @@ public class CommentServiceImpl implements CommentService {
         commentRepository.delete(comment);
     }
 }
-
