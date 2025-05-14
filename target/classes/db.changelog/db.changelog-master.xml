@@ -14,6 +14,9 @@
     <include file="db.changelog/data/2025-22-03--003-reaction-data.xml"/>
     <include file="db.changelog/1.0/2025-22-03--0004-comment.xml"/>
     <include file="db.changelog/data/2025-22-03--0004-comment-data.xml"/>
+    <include file="db.changelog/1.0/2025-05-13-favorite-articles.xml"/>
+    <include file="db.changelog/data/2025-05-13-favorite-articles-data.xml"/>
+
 
 
 

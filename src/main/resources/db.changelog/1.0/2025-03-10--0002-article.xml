@@ -29,6 +29,15 @@
                 <constraints nullable="false" />
             </column>
 
+            <column name="likes" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="dislikes" type="INT" defaultValue="0">
+                <constraints nullable="false"/>
+            </column>
+
+
 
         </createTable>
 

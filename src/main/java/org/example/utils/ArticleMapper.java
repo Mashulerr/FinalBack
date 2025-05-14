@@ -1,23 +1,37 @@
 package org.example.utils;
 
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
+import org.example.UserUtils;
 import org.example.dto.ArticleDTO;
 import org.example.dto.CommentDTO;
+import org.example.dto.UserDTO;
+import org.example.dto.UserRegisterDTO;
 import org.example.entity.Article;
 import org.example.entity.User;
+import org.example.service.FavoriteArticleService;
+import org.springframework.stereotype.Component;
 
-
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @UtilityClass
 public class ArticleMapper {
+    // Добавляем зависимость от сервиса (можно внедрить через конструктор, если убрать @UtilityClass)
+    private static FavoriteArticleService favoriteArticleService;
+
+    // Метод для установки сервиса (вызывается при инициализации)
+    public static void setFavoriteArticleService(FavoriteArticleService service) {
+        favoriteArticleService = service;
+    }
 
     public static Article convertToEntity(ArticleDTO articleDTO, User user) {
         Article article = new Article();
         article.setTitle(articleDTO.getTitle());
         article.setContent(articleDTO.getContent());
-        article.setUser (user); // Устанавливаем пользователя
+        article.setUser(user);
         return article;
     }
 
@@ -27,28 +41,40 @@ public class ArticleMapper {
         dto.setId(article.getId());
         dto.setTitle(article.getTitle());
         dto.setContent(article.getContent());
-        dto.setUsername(user != null ? user.getUsername() : null); // Устанавливаем в null
+        dto.setUsername(user != null ? user.getUsername() : null);
         dto.setPhotoUrl(null);
         dto.setLikes(article.getLikes());
         dto.setDislikes(article.getDislikes());
 
-        List<CommentDTO> commentDTOs = article.getComments().stream()
-                .map(comment -> {
-                    CommentDTO commentDTO = new CommentDTO();
-                    commentDTO.setId(comment.getId());
-                    commentDTO.setContent(comment.getContent());
+        // Обработка комментариев
+        List<CommentDTO> commentDTOs = article.getComments() != null ?
+                article.getComments().stream()
+                        .map(comment -> {
+                            CommentDTO commentDTO = new CommentDTO();
+                            commentDTO.setId(comment.getId());
+                            commentDTO.setContent(comment.getContent());
 
-                    User commentUser  = comment.getUser ();
-                    commentDTO.setUsername(commentUser  != null ? commentUser .getUsername() : null); // Устанавливаем в null
-                    commentDTO.setPhotoUrl(null);
-                    commentDTO.setUser_id(commentUser  != null ? commentUser .getId() : null); // Устанавливаем в null
-                    commentDTO.setArticleId(article.getId()); // ID статьи
+                            User commentUser = comment.getUser();
+                            commentDTO.setUsername(commentUser != null ? commentUser.getUsername() : null);
+                            commentDTO.setPhotoUrl(null);
+                            commentDTO.setUser_id(commentUser != null ? commentUser.getId() : null);
+                            commentDTO.setArticleId(article.getId());
 
-                    return commentDTO;
-                })
-                .collect(Collectors.toList());
+                            return commentDTO;
+                        })
+                        .collect(Collectors.toList()) :
+                Collections.emptyList();
 
         dto.setComments(commentDTOs);
+
+
+        Long currentUserId = UserUtils.getCurrentUser_id();
+        if (currentUserId != null && favoriteArticleService != null) {
+            dto.setFavorite(favoriteArticleService.isArticleInFavorites(currentUserId, article.getId()));
+        } else {
+            dto.setFavorite(false);
+        }
+
         return dto;
     }
 }

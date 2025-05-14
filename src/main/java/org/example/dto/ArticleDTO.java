@@ -1,8 +1,6 @@
 package org.example.dto;
 
 import lombok.Data;
-import org.example.entity.Comment;
-import org.example.entity.Reaction;
 
 import java.util.List;
 
@@ -16,4 +14,5 @@ public class ArticleDTO {
     private int likes;
     private int dislikes;
     private List<CommentDTO> comments;
+    private boolean isFavorite;
 }

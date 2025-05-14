@@ -1,12 +1,15 @@
 package org.example.controller;
 
+import org.example.UserUtils;
 import org.example.dto.ArticleDTO;
 import org.example.entity.Article;
 import org.example.exception.InvalidNewsException;
 import org.example.exception.NewsNotFoundException;
+import org.example.exception.UnauthorizedException;
 import org.example.repository.ArticleRepository;
 import org.example.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,12 +31,17 @@ public class ArticleController {
         return articleService.getAllArticles();
     }
 
+
     @PostMapping
-    public ResponseEntity<Article> createArticle(@RequestBody Article article) {
-        if (article.getTitle() == null || article.getTitle().isEmpty()) {
-            throw new InvalidNewsException("Название новости не может быть пустым");
+    public ResponseEntity<ArticleDTO> createArticle(@RequestBody ArticleDTO articleDTO) {
+        try {
+            ArticleDTO createdArticle = articleService.createArticle(articleDTO);
+            return ResponseEntity.ok(createdArticle);
+        } catch (InvalidNewsException e) {
+            throw e; // Будет обработано GlobalExceptionHandler
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        return ResponseEntity.ok(articleRepository.save(article));
     }
 
     @GetMapping("/{id}")

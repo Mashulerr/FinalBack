@@ -1,10 +1,10 @@
 package org.example.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -25,11 +25,17 @@ public class Article {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Comment> comments;
+    private int likes;
+    private int dislikes;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Reaction> reactions;
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reaction> reactions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteArticle> favoriteArticles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
     // Метод для подсчета лайков
     public int getLikes() {
@@ -38,7 +44,16 @@ public class Article {
                 .count();
     }
 
-    // Метод для подсчета дизлайков
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public void setDislikes(int likes) {
+        this.dislikes=dislikes;
+    }
+
+
+
     public int getDislikes() {
         return (int) reactions.stream()
                 .filter(reaction -> "dislike".equals(reaction.getType()))

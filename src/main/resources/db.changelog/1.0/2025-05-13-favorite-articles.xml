@@ -1,0 +1,26 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+                   http://www.liquibase.org/xml/ns/dbchangelog-ext  http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="db.changelog/1.0/2025-05-13-favorite-articles" author="mabubakirova">
+        <preConditions>
+            <not>
+                <tableExists tableName="favorite_articles"/>
+            </not>
+        </preConditions>
+        <createTable tableName="favorite_articles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_favorite_user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="article_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_favorite_article" referencedTableName="article" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

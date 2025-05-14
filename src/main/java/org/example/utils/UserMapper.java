@@ -3,6 +3,7 @@ package org.example.utils;
 import lombok.experimental.UtilityClass;
 import org.example.dto.UserDTO;
 import org.example.entity.User;
+import org.springframework.stereotype.Component;
 
 @UtilityClass
 public class UserMapper {
