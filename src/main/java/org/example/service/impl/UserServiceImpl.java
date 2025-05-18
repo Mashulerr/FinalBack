@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO createUser(UserRegisterDTO dto) {
 
         if (userRepository.findByUsername(dto.getUsername()).isPresent())
