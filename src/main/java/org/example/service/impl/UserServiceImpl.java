@@ -79,17 +79,36 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        if (userRepository.findByUsername(dto.getUsername()).isPresent())
-            throw new UserAlreadyExistsException("Username already exists!");
+        // Обновляем username, только если оно новое и не пустое
+        if (dto.getUsername() != null && !dto.getUsername().isBlank()
+                && !dto.getUsername().equals(user.getUsername())) {
+            if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
+                throw new UserAlreadyExistsException("Username already exists!");
+            }
+            user.setUsername(dto.getUsername());
+        }
 
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setUsername(dto.getUsername());
-        user.setPhotoUrl(dto.getPhotoUrl());
-        user.setPhone(dto.getPhone());
+        // Обновляем name, только если оно не null и не "string"
+        if (dto.getName() != null && !dto.getName().isBlank() && !dto.getName().equals("string")) {
+            user.setName(dto.getName());
+        }
+
+        // Аналогично для email
+        if (dto.getEmail() != null && !dto.getEmail().isBlank() && !dto.getEmail().equals("string")) {
+            user.setEmail(dto.getEmail());
+        }
+
+        // photoUrl обновляем, только если не null (если клиент явно передал null, можно заменить)
+        if (dto.getPhotoUrl() != null) {
+            user.setPhotoUrl(dto.getPhotoUrl());
+        }
+
+        // phone обновляем, только если не "string" и не пустой
+        if (dto.getPhone() != null && !dto.getPhone().isBlank() && !dto.getPhone().equals("string")) {
+            user.setPhone(dto.getPhone());
+        }
 
         return UserMapper.convertToDto(userRepository.save(user));
-
     }
 
     @Override
