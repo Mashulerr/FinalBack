@@ -156,10 +156,17 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new NewsNotFoundException("Article not found!"));
 
-        article.setTitle(dto.getTitle());
-        article.setContent(dto.getContent());
+        // Обновляем title, только если оно не null, не пустое и не "string"
+        if (dto.getTitle() != null && !dto.getTitle().isBlank() && !dto.getTitle().equals("string")) {
+            article.setTitle(dto.getTitle());
+        }
 
-        User user = article.getUser ();
+        // То же для content
+        if (dto.getContent() != null && !dto.getContent().isBlank() && !dto.getContent().equals("string")) {
+            article.setContent(dto.getContent());
+        }
+
+        User user = article.getUser();
         return ArticleMapper.convertToDto(articleRepository.save(article), user);
     }
 
