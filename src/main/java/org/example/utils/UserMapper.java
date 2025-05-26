@@ -13,7 +13,7 @@ public class UserMapper {
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setName(user.getName());
-        userDTO.setPhotoUrl(null);
+        userDTO.setPhotoUrl(user.getPhotoUrl());
         userDTO.setEmail(user.getEmail());
         userDTO.setPhone(user.getPhone());
 
