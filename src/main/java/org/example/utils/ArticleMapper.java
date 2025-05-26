@@ -42,7 +42,7 @@ public class ArticleMapper {
         dto.setTitle(article.getTitle());
         dto.setContent(article.getContent());
         dto.setUsername(user != null ? user.getUsername() : null);
-        dto.setPhotoUrl(null);
+        dto.setPhotoUrl(user.getPhotoUrl());
         dto.setLikes(article.getLikes());
         dto.setDislikes(article.getDislikes());
 
@@ -56,7 +56,7 @@ public class ArticleMapper {
 
                             User commentUser = comment.getUser();
                             commentDTO.setUsername(commentUser != null ? commentUser.getUsername() : null);
-                            commentDTO.setPhotoUrl(null);
+                            commentDTO.setPhotoUrl(comment.getUser().getPhotoUrl());
                             commentDTO.setUser_id(commentUser != null ? commentUser.getId() : null);
                             commentDTO.setArticleId(article.getId());
 

@@ -13,7 +13,7 @@ public class CommentMapper {
         commentDTO.setArticleId(comment.getArticle() != null ? comment.getArticle().getId() : null);
         commentDTO.setUser_id(comment.getUser () != null ? comment.getUser ().getId() : null);
         commentDTO.setUsername(comment.getUser () != null ? comment.getUser ().getUsername() : null); // Устанавливаем в null
-        commentDTO.setPhotoUrl(null);
+        commentDTO.setPhotoUrl(comment.getUser().getPhotoUrl());
         commentDTO.setContent(comment.getContent());
         return commentDTO;
     }
