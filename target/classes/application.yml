@@ -1,34 +1,25 @@
 server:
-  port: 8080
+  port : 8080
 
 spring:
   datasource:
-    url: jdbc:h2:file:./data/mydb  # Сохранение в файл вместо памяти
-    username: sa
-    password: ""
+    url: jdbc:h2:file:./data/testdb
     driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
 
   h2:
     console:
       enabled: true
-      path: /h2-console  # URL для доступа к консоли H2
-      settings:
-        web-allow-others: false
-
-  jpa:
-    hibernate:
-      ddl-auto: update  # Автоматическое обновление схемы без удаления данных
-    show-sql: true      # Логирование SQL-запросов
-    properties:
-      hibernate:
-        format_sql: true  # Красивое форматирование SQL в логах
 
   liquibase:
     enabled: true
     change-log: classpath:db.changelog/db.changelog-master.xml
 
-# Настройка для удобства разработки
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+
+    show-sql: true

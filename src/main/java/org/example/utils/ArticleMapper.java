@@ -19,10 +19,8 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class ArticleMapper {
-    // Добавляем зависимость от сервиса (можно внедрить через конструктор, если убрать @UtilityClass)
-    private static FavoriteArticleService favoriteArticleService;
 
-    // Метод для установки сервиса (вызывается при инициализации)
+    private static FavoriteArticleService favoriteArticleService;
     public static void setFavoriteArticleService(FavoriteArticleService service) {
         favoriteArticleService = service;
     }
@@ -42,11 +40,11 @@ public class ArticleMapper {
         dto.setTitle(article.getTitle());
         dto.setContent(article.getContent());
         dto.setUsername(user != null ? user.getUsername() : null);
-        dto.setPhotoUrl(user.getPhotoUrl());
+        dto.setPhotoUrl(user != null ? user.getPhotoUrl() : null);
         dto.setLikes(article.getLikes());
         dto.setDislikes(article.getDislikes());
 
-        // Обработка комментариев
+
         List<CommentDTO> commentDTOs = article.getComments() != null ?
                 article.getComments().stream()
                         .map(comment -> {
@@ -56,7 +54,7 @@ public class ArticleMapper {
 
                             User commentUser = comment.getUser();
                             commentDTO.setUsername(commentUser != null ? commentUser.getUsername() : null);
-                            commentDTO.setPhotoUrl(comment.getUser().getPhotoUrl());
+                            commentDTO.setPhotoUrl(commentUser != null ? commentUser.getPhotoUrl() : null);
                             commentDTO.setUser_id(commentUser != null ? commentUser.getId() : null);
                             commentDTO.setArticleId(article.getId());
 
