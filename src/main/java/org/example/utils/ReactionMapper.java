@@ -13,8 +13,6 @@ public class ReactionMapper {
         reactionDTO.setArticleId(reaction.getArticle() != null ? reaction.getArticle().getId() : null);
         reactionDTO.setType(reaction.getType());
         reactionDTO.setUser_id(reaction.getUser() != null ? reaction.getUser().getId() : null);
-
-
         return reactionDTO;
     }
 
@@ -22,7 +20,6 @@ public class ReactionMapper {
         Reaction reaction = new Reaction();
         reaction.setId(reactionDTO.getId());
         reaction.setType(reactionDTO.getType());
-        reactionDTO.setUser_id(reaction.getUser() != null ? reaction.getUser().getId() : null);
 
         return reaction;
     }

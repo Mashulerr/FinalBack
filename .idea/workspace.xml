@@ -5,12 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="91a34473-6dcd-44e6-9a87-a98c874770bc" name="Changes" comment="article">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/example/exception/DuplicateReactionException.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/mydb.mv.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/mydb.mv.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/mydb.trace.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/mydb.trace.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/ArticleMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/ArticleMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/db.changelog/data/csv/2025-02-19--0001-user-data.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/testdb.mv.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/testdb.mv.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/testdb.trace.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/testdb.trace.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/repository/ReactionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/repository/ReactionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ReactionServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/service/impl/ReactionServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/example/utils/ReactionMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/example/utils/ReactionMapper.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,12 +36,12 @@
     &quot;assignee&quot;: &quot;Mashulerr&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Mashulerr/FinalBack&quot;,
-    &quot;accountId&quot;: &quot;e0af7554-59d1-4c4f-9367-0e10dd5b77f0&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Mashulerr/FinalBack.git",
+    "accountId": "e0af7554-59d1-4c4f-9367-0e10dd5b77f0"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -64,10 +65,9 @@
   }
 }</component>
   <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <option name="filePath" />
+      <method v="2" />
     </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
