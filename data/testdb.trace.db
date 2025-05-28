@@ -1,4 +1,4 @@
-2025-05-28 23:09:00 jdbc[3]: exception
+2025-05-28 23:24:41 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Функция "VERSION" не найдена
 Function "VERSION" not found; SQL statement:
 select version() [90022-200]
@@ -54,7 +54,7 @@ select version() [90022-200]
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1343)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1332)
 	at org.example.Main.main(Main.java:12)
-2025-05-28 23:09:00 jdbc[3]: exception
+2025-05-28 23:24:41 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "DATABASECHANGELOGLOCK" не найдена
 Table "DATABASECHANGELOGLOCK" not found; SQL statement:
 SELECT COUNT(*) FROM PUBLIC.DATABASECHANGELOGLOCK [42102-200]
