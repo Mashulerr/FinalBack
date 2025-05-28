@@ -17,6 +17,7 @@ import org.example.utils.ReactionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -115,4 +116,34 @@ public class ReactionServiceImpl implements ReactionService {
                 .map(ReactionMapper::convertToDto)
                 .collect(Collectors.toList());
     }
+
+    public void cleanUpDuplicatesForUserAndArticle(Long userId, Long articleId) {
+        List<Reaction> reactions = reactionRepository.findAllByUserIdAndArticleId(userId, articleId);
+        if (reactions.size() > 1) {
+            Reaction toKeep = reactions.get(0);
+            reactionRepository.deleteDuplicates(userId, articleId, toKeep.getId());
+        }
+    }
+
+
+
+    @Override
+    @Transactional
+    public ReactionDTO getReactionByUserAndArticle(Long userId, Long articleId) throws ArticleNotFoundException {
+        List<Reaction> reactions = reactionRepository.findAllByUserIdAndArticleId(userId, articleId);
+
+        if (reactions.isEmpty()) {
+            throw new ArticleNotFoundException(
+                    String.format("Reaction not found for user %d and article %d", userId, articleId));
+        }
+
+        // Удаляем дубликаты, если есть
+        if (reactions.size() > 1) {
+            Reaction reactionToKeep = reactions.get(0);
+            reactionRepository.deleteDuplicates(userId, articleId, reactionToKeep.getId());
+        }
+
+        return ReactionMapper.convertToDto(reactions.get(0));
+    }
+
 }

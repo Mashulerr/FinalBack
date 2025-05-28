@@ -12,5 +12,6 @@ public interface ReactionService {
     List<ReactionDTO> getReactionsByArticleId(Long articleId);
     void deleteReaction(Long id) throws ArticleNotFoundException;
     List<ReactionDTO> getReactionsByUserId(Long userId);
+    ReactionDTO getReactionByUserAndArticle(Long userId, Long articleId) throws ArticleNotFoundException;
 
 }

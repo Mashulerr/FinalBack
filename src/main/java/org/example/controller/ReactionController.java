@@ -1,6 +1,9 @@
 package org.example.controller;
 
+import org.example.UserUtils;
 import org.example.dto.ReactionDTO;
+import org.example.exception.ArticleNotFoundException;
+import org.example.exception.UnauthorizedException;
 import org.example.service.ReactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,32 @@ public class ReactionController {
     public ResponseEntity<ReactionDTO> createReaction(@RequestBody ReactionDTO reactionDTO) {
         ReactionDTO createdReaction = reactionService.createReaction(reactionDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdReaction);
+    }
+
+    @GetMapping("/user/{userId}/article/{articleId}")
+    public ResponseEntity<ReactionDTO> getReactionByUserAndArticle(
+            @PathVariable Long userId,
+            @PathVariable Long articleId) {
+        try {
+            ReactionDTO reaction = reactionService.getReactionByUserAndArticle(userId, articleId);
+            return ResponseEntity.ok(reaction);
+        } catch (ArticleNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/current-user/article/{articleId}")
+    public ResponseEntity<ReactionDTO> getCurrentUserReactionForArticle(
+            @PathVariable Long articleId) {
+        try {
+            long userId = UserUtils.getCurrentUser_id();
+            ReactionDTO reaction = reactionService.getReactionByUserAndArticle(userId, articleId);
+            return ResponseEntity.ok(reaction);
+        } catch (ArticleNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/{id}")
