@@ -51,28 +51,58 @@ public class ReactionServiceImpl implements ReactionService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException("Article not found."));
 
-        // Получаем все реакции пользователя на статью
+        // Проверяем существующие реакции пользователя на статью
         List<Reaction> existingReactions = reactionRepository.findByUserIdAndArticleId(userId, articleId);
 
         if (!existingReactions.isEmpty()) {
-            // Если хотим обновить существующую реакцию
             Reaction existingReaction = existingReactions.get(0);
-            existingReaction.setType(reactionDTO.getType());
-            Reaction updatedReaction = reactionRepository.save(existingReaction);
-            return ReactionMapper.convertToDto(updatedReaction);
+            String oldType = existingReaction.getType();
+            String newType = reactionDTO.getType();
 
-            // Или если хотим запретить изменение:
-            // throw new DuplicateReactionException("User has already reacted to this article");
+            // Если тип реакции не изменился, просто возвращаем существующую реакцию
+            if (oldType.equals(newType)) {
+                return ReactionMapper.convertToDto(existingReaction);
+            }
+
+            // Обновляем счетчики в статье
+            updateArticleCounters(article, oldType, newType);
+
+            // Обновляем тип реакции
+            existingReaction.setType(newType);
+            Reaction updatedReaction = reactionRepository.save(existingReaction);
+            articleRepository.save(article);
+
+            return ReactionMapper.convertToDto(updatedReaction);
         }
 
+        // Создаем новую реакцию
         Reaction reaction = ReactionMapper.convertToEntity(reactionDTO);
         reaction.setUser(user);
         reaction.setArticle(article);
+
+        // Обновляем счетчики в статье
+        updateArticleCounters(article, null, reactionDTO.getType());
+
         Reaction savedReaction = reactionRepository.save(reaction);
+        articleRepository.save(article);
 
         return ReactionMapper.convertToDto(savedReaction);
     }
-    // Остальные методы остаются без изменений
+
+    @Override
+    public void deleteReaction(Long id) throws ArticleNotFoundException {
+        Reaction reaction = reactionRepository.findById(id)
+                .orElseThrow(() -> new ArticleNotFoundException("Reaction not found!"));
+
+        Article article = reaction.getArticle();
+
+        // Уменьшаем счетчик в статье
+        updateArticleCounters(article, reaction.getType(), null);
+
+        reactionRepository.delete(reaction);
+        articleRepository.save(article);
+    }
+
     @Override
     public ReactionDTO getReactionById(Long id) throws ArticleNotFoundException {
         Reaction reaction = reactionRepository.findById(id)
@@ -88,10 +118,22 @@ public class ReactionServiceImpl implements ReactionService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public void deleteReaction(Long id) throws ArticleNotFoundException {
-        Reaction reaction = reactionRepository.findById(id)
-                .orElseThrow(() -> new ArticleNotFoundException("Reaction not found!"));
-        reactionRepository.delete(reaction);
+    // Вспомогательный метод для обновления счетчиков в статье
+    private void updateArticleCounters(Article article, String oldType, String newType) {
+        if (oldType != null) {
+            if ("like".equals(oldType)) {
+                article.setLikes(article.getLikes() - 1);
+            } else if ("dislike".equals(oldType)) {
+                article.setDislikes(article.getDislikes() - 1);
+            }
+        }
+
+        if (newType != null) {
+            if ("like".equals(newType)) {
+                article.setLikes(article.getLikes() + 1);
+            } else if ("dislike".equals(newType)) {
+                article.setDislikes(article.getDislikes() + 1);
+            }
+        }
     }
 }

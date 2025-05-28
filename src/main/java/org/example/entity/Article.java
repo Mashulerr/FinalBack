@@ -37,12 +37,6 @@ public class Article {
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
-    // Метод для подсчета лайков
-    public int getLikes() {
-        return (int) reactions.stream()
-                .filter(reaction -> "like".equals(reaction.getType()))
-                .count();
-    }
 
     public void setLikes(int likes) {
         this.likes = likes;
@@ -54,9 +48,28 @@ public class Article {
 
 
 
+    public int getLikes() {
+        return this.likes;
+    }
+
     public int getDislikes() {
-        return (int) reactions.stream()
-                .filter(reaction -> "dislike".equals(reaction.getType()))
-                .count();
+        return this.dislikes;
+    }
+
+
+    public void incrementLikes() {
+        this.likes++;
+    }
+
+    public void decrementLikes() {
+        this.likes--;
+    }
+
+    public void incrementDislikes() {
+        this.dislikes++;
+    }
+
+    public void decrementDislikes() {
+        this.dislikes--;
     }
 }
