@@ -8,5 +8,5 @@ public class ReactionDTO {
     private Long id;
     private Long articleId;
     private String type;
-    private Long user_id;
+    private Long userId;
 }

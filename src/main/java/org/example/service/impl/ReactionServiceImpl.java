@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Service
 public class ReactionServiceImpl implements ReactionService {
@@ -51,56 +53,44 @@ public class ReactionServiceImpl implements ReactionService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException("Article not found."));
 
-        // Проверяем существующие реакции пользователя на статью
-        List<Reaction> existingReactions = reactionRepository.findByUserIdAndArticleId(userId, articleId);
+        Optional<Reaction> existingReaction = reactionRepository.findByUserAndArticle(user, article);
 
-        if (!existingReactions.isEmpty()) {
-            Reaction existingReaction = existingReactions.get(0);
-            String oldType = existingReaction.getType();
-            String newType = reactionDTO.getType();
-
-            // Если тип реакции не изменился, просто возвращаем существующую реакцию
-            if (oldType.equals(newType)) {
-                return ReactionMapper.convertToDto(existingReaction);
+        if (existingReaction.isPresent()) {
+            Reaction reaction = existingReaction.get();
+            if (reaction.getType().equals(reactionDTO.getType())) {
+                return ReactionMapper.convertToDto(reaction);
             }
 
-            // Обновляем счетчики в статье
-            updateArticleCounters(article, oldType, newType);
-
-            // Обновляем тип реакции
-            existingReaction.setType(newType);
-            Reaction updatedReaction = reactionRepository.save(existingReaction);
-            articleRepository.save(article);
-
+            reaction.setType(reactionDTO.getType());
+            Reaction updatedReaction = reactionRepository.save(reaction);
             return ReactionMapper.convertToDto(updatedReaction);
         }
 
-        // Создаем новую реакцию
-        Reaction reaction = ReactionMapper.convertToEntity(reactionDTO);
-        reaction.setUser(user);
+        Reaction reaction = new Reaction();
+        reaction.setType(reactionDTO.getType());
         reaction.setArticle(article);
-
-        // Обновляем счетчики в статье
-        updateArticleCounters(article, null, reactionDTO.getType());
+        reaction.setUser(user);
 
         Reaction savedReaction = reactionRepository.save(reaction);
-        articleRepository.save(article);
-
         return ReactionMapper.convertToDto(savedReaction);
     }
 
     @Override
-    public void deleteReaction(Long id) throws ArticleNotFoundException {
-        Reaction reaction = reactionRepository.findById(id)
+    public void deleteReaction(Long reactionId) throws ArticleNotFoundException, UnauthorizedException {
+        Long userId = UserUtils.getCurrentUser_id();
+
+        if (userId == null) {
+            throw new UnauthorizedException("User is not authenticated.");
+        }
+
+        Reaction reaction = reactionRepository.findById(reactionId)
                 .orElseThrow(() -> new ArticleNotFoundException("Reaction not found!"));
 
-        Article article = reaction.getArticle();
-
-        // Уменьшаем счетчик в статье
-        updateArticleCounters(article, reaction.getType(), null);
+        if (reaction.getUser().getId() != userId) {
+            throw new UnauthorizedException("You can only delete your own reactions");
+        }
 
         reactionRepository.delete(reaction);
-        articleRepository.save(article);
     }
 
     @Override
@@ -118,22 +108,11 @@ public class ReactionServiceImpl implements ReactionService {
                 .collect(Collectors.toList());
     }
 
-    // Вспомогательный метод для обновления счетчиков в статье
-    private void updateArticleCounters(Article article, String oldType, String newType) {
-        if (oldType != null) {
-            if ("like".equals(oldType)) {
-                article.setLikes(article.getLikes() - 1);
-            } else if ("dislike".equals(oldType)) {
-                article.setDislikes(article.getDislikes() - 1);
-            }
-        }
-
-        if (newType != null) {
-            if ("like".equals(newType)) {
-                article.setLikes(article.getLikes() + 1);
-            } else if ("dislike".equals(newType)) {
-                article.setDislikes(article.getDislikes() + 1);
-            }
-        }
+    @Override
+    public List<ReactionDTO> getReactionsByUserId(Long userId) {
+        List<Reaction> reactions = reactionRepository.findByUserId(userId);
+        return reactions.stream()
+                .map(ReactionMapper::convertToDto)
+                .collect(Collectors.toList());
     }
 }

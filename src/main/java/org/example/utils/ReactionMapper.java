@@ -6,13 +6,12 @@ import org.example.entity.Reaction;
 
 @UtilityClass
 public class ReactionMapper {
-
     public ReactionDTO convertToDto(Reaction reaction) {
         ReactionDTO reactionDTO = new ReactionDTO();
         reactionDTO.setId(reaction.getId());
-        reactionDTO.setArticleId(reaction.getArticle() != null ? reaction.getArticle().getId() : null);
+        reactionDTO.setArticleId(reaction.getArticle().getId());
+        reactionDTO.setUserId(reaction.getUser().getId()); // Устанавливаем userId
         reactionDTO.setType(reaction.getType());
-        reactionDTO.setUser_id(reaction.getUser() != null ? reaction.getUser().getId() : null);
         return reactionDTO;
     }
 
