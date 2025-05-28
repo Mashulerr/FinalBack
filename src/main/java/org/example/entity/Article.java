@@ -42,11 +42,9 @@ public class Article {
         this.likes = likes;
     }
 
-    public void setDislikes(int likes) {
-        this.dislikes=dislikes;
+    public void setDislikes(int dislikes) {
+        this.dislikes = dislikes;
     }
-
-
 
     public int getLikes() {
         return this.likes;
@@ -55,6 +53,7 @@ public class Article {
     public int getDislikes() {
         return this.dislikes;
     }
+
 
 
     public void incrementLikes() {

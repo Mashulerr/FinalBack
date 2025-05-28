@@ -5,6 +5,7 @@ import org.example.UserUtils;
 import org.example.dto.ReactionDTO;
 import org.example.entity.Article;
 import org.example.entity.Reaction;
+import org.example.entity.ReactionType;
 import org.example.entity.User;
 import org.example.exception.ArticleNotFoundException;
 import org.example.exception.DuplicateReactionException;
@@ -39,9 +40,25 @@ public class ReactionServiceImpl implements ReactionService {
         this.userRepository = userRepository;
     }
 
+    private void adjustReactionCounters(Article article, ReactionType type, int delta) {
+        if (type == ReactionType.LIKE) {
+            article.setLikes(article.getLikes() + delta);
+        } else if (type == ReactionType.DISLIKE) {
+            article.setDislikes(article.getDislikes() + delta);
+        }
+    }
+
     @Override
     public ReactionDTO createReaction(ReactionDTO reactionDTO) throws ArticleNotFoundException, UnauthorizedException {
         Long userId = UserUtils.getCurrentUser_id();
+
+        ReactionType newType;
+        try {
+            newType = ReactionType.fromValue(reactionDTO.getType());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
 
         if (userId == null) {
             throw new UnauthorizedException("User is not authenticated.");
@@ -54,23 +71,43 @@ public class ReactionServiceImpl implements ReactionService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException("Article not found."));
 
-        Optional<Reaction> existingReaction = reactionRepository.findByUserAndArticle(user, article);
+        // Получаем тип реакции из DTO, очищаем пробелы и приводим к верхнему регистру
+        String rawType = reactionDTO.getType();
+        if (rawType == null || rawType.trim().isEmpty()) {
+            throw new IllegalArgumentException("Reaction type must be specified");
+        }
 
-        if (existingReaction.isPresent()) {
-            Reaction reaction = existingReaction.get();
-            if (reaction.getType().equals(reactionDTO.getType())) {
-                return ReactionMapper.convertToDto(reaction);
+
+
+        Optional<Reaction> existingReactionOpt = reactionRepository.findByUserAndArticle(user, article);
+
+        if (existingReactionOpt.isPresent()) {
+            Reaction existingReaction = existingReactionOpt.get();
+
+            // Если тип реакции не изменился — возвращаем существующую
+            if (existingReaction.getType().equals(newType)) {
+                return ReactionMapper.convertToDto(existingReaction);
             }
 
-            reaction.setType(reactionDTO.getType());
-            Reaction updatedReaction = reactionRepository.save(reaction);
+            // Корректируем счетчики лайков/дизлайков
+            adjustReactionCounters(article, existingReaction.getType(), -1);
+            adjustReactionCounters(article, newType, 1);
+
+            existingReaction.setType(newType);
+
+            articleRepository.save(article);
+            Reaction updatedReaction = reactionRepository.save(existingReaction);
             return ReactionMapper.convertToDto(updatedReaction);
         }
 
+        // Создаем новую реакцию
         Reaction reaction = new Reaction();
-        reaction.setType(reactionDTO.getType());
+        reaction.setType(newType);
         reaction.setArticle(article);
         reaction.setUser(user);
+
+        adjustReactionCounters(article, newType, 1);
+        articleRepository.save(article);
 
         Reaction savedReaction = reactionRepository.save(reaction);
         return ReactionMapper.convertToDto(savedReaction);
@@ -91,9 +128,15 @@ public class ReactionServiceImpl implements ReactionService {
             throw new UnauthorizedException("You can only delete your own reactions");
         }
 
+
+        Article article = reaction.getArticle();
+        adjustReactionCounters(article, reaction.getType(), -1);
+        articleRepository.save(article);
+
         reactionRepository.delete(reaction);
     }
 
+    // Остальные методы остаются без изменений
     @Override
     public ReactionDTO getReactionById(Long id) throws ArticleNotFoundException {
         Reaction reaction = reactionRepository.findById(id)
@@ -117,16 +160,6 @@ public class ReactionServiceImpl implements ReactionService {
                 .collect(Collectors.toList());
     }
 
-    public void cleanUpDuplicatesForUserAndArticle(Long userId, Long articleId) {
-        List<Reaction> reactions = reactionRepository.findAllByUserIdAndArticleId(userId, articleId);
-        if (reactions.size() > 1) {
-            Reaction toKeep = reactions.get(0);
-            reactionRepository.deleteDuplicates(userId, articleId, toKeep.getId());
-        }
-    }
-
-
-
     @Override
     @Transactional
     public ReactionDTO getReactionByUserAndArticle(Long userId, Long articleId) throws ArticleNotFoundException {
@@ -137,7 +170,6 @@ public class ReactionServiceImpl implements ReactionService {
                     String.format("Reaction not found for user %d and article %d", userId, articleId));
         }
 
-        // Удаляем дубликаты, если есть
         if (reactions.size() > 1) {
             Reaction reactionToKeep = reactions.get(0);
             reactionRepository.deleteDuplicates(userId, articleId, reactionToKeep.getId());
@@ -145,5 +177,4 @@ public class ReactionServiceImpl implements ReactionService {
 
         return ReactionMapper.convertToDto(reactions.get(0));
     }
-
 }

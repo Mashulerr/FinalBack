@@ -10,16 +10,15 @@ public class ReactionMapper {
         ReactionDTO reactionDTO = new ReactionDTO();
         reactionDTO.setId(reaction.getId());
         reactionDTO.setArticleId(reaction.getArticle().getId());
-        reactionDTO.setUserId(reaction.getUser().getId()); // Устанавливаем userId
-        reactionDTO.setType(reaction.getType());
+        reactionDTO.setUserId(reaction.getUser().getId());
+        reactionDTO.setType(reaction.getType().name().toLowerCase()); // Возвращаем в нижнем регистре
         return reactionDTO;
     }
 
     public Reaction convertToEntity(ReactionDTO reactionDTO) {
         Reaction reaction = new Reaction();
         reaction.setId(reactionDTO.getId());
-        reaction.setType(reactionDTO.getType());
-
+        // Тип будет установлен в сервисе
         return reaction;
     }
 }

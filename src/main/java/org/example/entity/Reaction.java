@@ -22,6 +22,8 @@ public class Reaction {
     private User user;
 
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private String type;
+    private ReactionType type;
+
 }
