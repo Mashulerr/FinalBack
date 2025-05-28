@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.ArticleDTO;
 import org.example.dto.UserDTO;
 import org.example.entity.Article;
+import org.example.entity.Reaction;
 import org.example.entity.User;
 import org.example.exception.ArticleNotFoundException;
 import org.example.exception.InvalidNewsException;
@@ -107,28 +108,28 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public ArticleDTO createArticle(ArticleDTO articleDTO) throws UnauthorizedException {
-        // 1. Проверка аутентификации пользователя
+
         Long userId = UserUtils.getCurrentUser_id();
         if (userId == null) {
             throw new UnauthorizedException("User is not authenticated.");
         }
 
-        // 2. Валидация обязательных полей
+
         if (articleDTO.getTitle() == null || articleDTO.getTitle().trim().isEmpty()) {
             throw new InvalidNewsException("Article title cannot be empty");
         }
 
-        // 3. Получение и подготовка автора
+
         UserDTO userDTO = userService.getUserById(userId);
         User author = UserMapper.convertToEntity(userDTO);
 
-        // 4. Создание и сохранение статьи
+
         Article article = new Article();
         article.setTitle(articleDTO.getTitle());
         article.setContent(articleDTO.getContent());
         article.setUser(author);
 
-        // Установка значений по умолчанию
+
         article.setLikes(0);
         article.setDislikes(0);
         article.setComments(new ArrayList<>());
@@ -137,7 +138,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         Article savedArticle = articleRepository.save(article);
 
-        // 5. Подготовка и возврат DTO
+
         ArticleDTO responseDTO = new ArticleDTO();
         responseDTO.setId(savedArticle.getId());
         responseDTO.setTitle(savedArticle.getTitle());
@@ -156,19 +157,29 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new NewsNotFoundException("Article not found!"));
 
-        // Обновляем title, только если оно не null, не пустое и не "string"
+
         if (dto.getTitle() != null && !dto.getTitle().isBlank() && !dto.getTitle().equals("string")) {
             article.setTitle(dto.getTitle());
         }
 
-        // То же для content
+
         if (dto.getContent() != null && !dto.getContent().isBlank() && !dto.getContent().equals("string")) {
             article.setContent(dto.getContent());
         }
 
+
+        List<Reaction> reactions = reactionRepository.findByArticleId(id);
+        long likesCount = reactions.stream().filter(r -> "like".equals(r.getType())).count();
+        long dislikesCount = reactions.stream().filter(r -> "dislike".equals(r.getType())).count();
+
+        article.setLikes((int) likesCount);
+        article.setDislikes((int) dislikesCount);
+
         User user = article.getUser();
-        return ArticleMapper.convertToDto(articleRepository.save(article), user);
+        Article updatedArticle = articleRepository.save(article);
+        return ArticleMapper.convertToDto(updatedArticle, user);
     }
+
 
     @Override
     @Transactional
@@ -181,8 +192,6 @@ public class ArticleServiceImpl implements ArticleService {
         reactionRepository.deleteByArticle(article);
         commentRepository.deleteByArticle(article);
 
-
-        // Каскадное удаление должно сработать автоматически, но явное удаление выше - дополнительная страховка
         articleRepository.delete(article);
     }
 }
