@@ -24,6 +24,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
+
+import java.util.Objects;
+
+
 @Service
 public class ReactionServiceImpl implements ReactionService {
 
@@ -40,26 +44,10 @@ public class ReactionServiceImpl implements ReactionService {
         this.userRepository = userRepository;
     }
 
-    private void adjustReactionCounters(Article article, ReactionType type, int delta) {
-        if (type == ReactionType.LIKE) {
-            article.setLikes(article.getLikes() + delta);
-        } else if (type == ReactionType.DISLIKE) {
-            article.setDislikes(article.getDislikes() + delta);
-        }
-    }
-
     @Override
+    @Transactional
     public ReactionDTO createReaction(ReactionDTO reactionDTO) throws ArticleNotFoundException, UnauthorizedException {
         Long userId = UserUtils.getCurrentUser_id();
-
-        ReactionType newType;
-        try {
-            newType = ReactionType.fromValue(reactionDTO.getType());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-
-
         if (userId == null) {
             throw new UnauthorizedException("User is not authenticated.");
         }
@@ -71,36 +59,25 @@ public class ReactionServiceImpl implements ReactionService {
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new ArticleNotFoundException("Article not found."));
 
-        // Получаем тип реакции из DTO, очищаем пробелы и приводим к верхнему регистру
-        String rawType = reactionDTO.getType();
-        if (rawType == null || rawType.trim().isEmpty()) {
-            throw new IllegalArgumentException("Reaction type must be specified");
-        }
-
-
+        ReactionType newType = ReactionType.fromValue(reactionDTO.getType());
 
         Optional<Reaction> existingReactionOpt = reactionRepository.findByUserAndArticle(user, article);
 
         if (existingReactionOpt.isPresent()) {
             Reaction existingReaction = existingReactionOpt.get();
-
-            // Если тип реакции не изменился — возвращаем существующую
-            if (existingReaction.getType().equals(newType)) {
+            if (existingReaction.getType() == newType) {
                 return ReactionMapper.convertToDto(existingReaction);
             }
 
-            // Корректируем счетчики лайков/дизлайков
             adjustReactionCounters(article, existingReaction.getType(), -1);
             adjustReactionCounters(article, newType, 1);
 
             existingReaction.setType(newType);
-
-            articleRepository.save(article);
             Reaction updatedReaction = reactionRepository.save(existingReaction);
+            articleRepository.save(article);
             return ReactionMapper.convertToDto(updatedReaction);
         }
 
-        // Создаем новую реакцию
         Reaction reaction = new Reaction();
         reaction.setType(newType);
         reaction.setArticle(article);
@@ -114,9 +91,9 @@ public class ReactionServiceImpl implements ReactionService {
     }
 
     @Override
+    @Transactional
     public void deleteReaction(Long reactionId) throws ArticleNotFoundException, UnauthorizedException {
         Long userId = UserUtils.getCurrentUser_id();
-
         if (userId == null) {
             throw new UnauthorizedException("User is not authenticated.");
         }
@@ -124,19 +101,35 @@ public class ReactionServiceImpl implements ReactionService {
         Reaction reaction = reactionRepository.findById(reactionId)
                 .orElseThrow(() -> new ArticleNotFoundException("Reaction not found!"));
 
-        if (reaction.getUser().getId() != userId) {
+        if (!Objects.equals(reaction.getUser().getId(), userId)) {
             throw new UnauthorizedException("You can only delete your own reactions");
         }
 
-
         Article article = reaction.getArticle();
         adjustReactionCounters(article, reaction.getType(), -1);
-        articleRepository.save(article);
 
         reactionRepository.delete(reaction);
+        articleRepository.save(article);
     }
 
-    // Остальные методы остаются без изменений
+    private void adjustReactionCounters(Article article, ReactionType type, int delta) {
+        Objects.requireNonNull(article, "Article must not be null");
+        Objects.requireNonNull(type, "ReactionType must not be null");
+
+        switch (type) {
+            case LIKE:
+                int newLikes = article.getLikes() + delta;
+                article.setLikes(Math.max(newLikes, 0));
+                break;
+            case DISLIKE:
+                int newDislikes = article.getDislikes() + delta;
+                article.setDislikes(Math.max(newDislikes, 0));
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown ReactionType: " + type);
+        }
+    }
+
     @Override
     public ReactionDTO getReactionById(Long id) throws ArticleNotFoundException {
         Reaction reaction = reactionRepository.findById(id)
@@ -159,6 +152,8 @@ public class ReactionServiceImpl implements ReactionService {
                 .map(ReactionMapper::convertToDto)
                 .collect(Collectors.toList());
     }
+
+
 
     @Override
     @Transactional
