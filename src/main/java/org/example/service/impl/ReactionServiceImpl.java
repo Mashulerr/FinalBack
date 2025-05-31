@@ -8,7 +8,6 @@ import org.example.entity.Reaction;
 import org.example.entity.ReactionType;
 import org.example.entity.User;
 import org.example.exception.ArticleNotFoundException;
-import org.example.exception.DuplicateReactionException;
 import org.example.exception.UnauthorizedException;
 import org.example.repository.ArticleRepository;
 import org.example.repository.ReactionRepository;
@@ -89,6 +88,8 @@ public class ReactionServiceImpl implements ReactionService {
         Reaction savedReaction = reactionRepository.save(reaction);
         return ReactionMapper.convertToDto(savedReaction);
     }
+
+
 
     @Override
     @Transactional

@@ -12,7 +12,7 @@ public class CommentMapper {
         commentDTO.setId(comment.getId());
         commentDTO.setArticleId(comment.getArticle() != null ? comment.getArticle().getId() : null);
         commentDTO.setUser_id(comment.getUser () != null ? comment.getUser ().getId() : null);
-        commentDTO.setUsername(comment.getUser () != null ? comment.getUser ().getUsername() : null); // Устанавливаем в null
+        commentDTO.setUsername(comment.getUser () != null ? comment.getUser ().getUsername() : null);
         commentDTO.setPhotoUrl(comment.getUser().getPhotoUrl());
         commentDTO.setContent(comment.getContent());
         return commentDTO;
@@ -21,7 +21,7 @@ public class CommentMapper {
     public static Comment convertToEntity(CommentDTO commentDTO) {
         Comment comment = new Comment();
         comment.setContent(commentDTO.getContent());
-        // Не устанавливаем пользователя и статью здесь, они будут установлены в сервисе
+
         return comment;
     }
 }

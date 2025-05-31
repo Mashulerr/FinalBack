@@ -5,8 +5,6 @@ import org.example.dto.UserDTO;
 import org.example.entity.User;
 import org.example.exception.UserAlreadyExistsException;
 import org.example.exception.UserNotFoundException;
-import org.example.repository.ArticleRepository;
-import org.example.repository.FavoriteArticleRepository;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.example.utils.UserMapper;
@@ -79,7 +77,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found!"));
 
-        // Обновляем username, только если оно новое и не пустое
+
         if (dto.getUsername() != null && !dto.getUsername().isBlank()
                 && !dto.getUsername().equals(user.getUsername())) {
             if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
@@ -88,22 +86,22 @@ public class UserServiceImpl implements UserService {
             user.setUsername(dto.getUsername());
         }
 
-        // Обновляем name, только если оно не null и не "string"
+
         if (dto.getName() != null && !dto.getName().isBlank() && !dto.getName().equals("string")) {
             user.setName(dto.getName());
         }
 
-        // Аналогично для email
+
         if (dto.getEmail() != null && !dto.getEmail().isBlank() && !dto.getEmail().equals("string")) {
             user.setEmail(dto.getEmail());
         }
 
-        // photoUrl обновляем, только если не null (если клиент явно передал null, можно заменить)
+
         if (dto.getPhotoUrl() != null) {
             user.setPhotoUrl(dto.getPhotoUrl());
         }
 
-        // phone обновляем, только если не "string" и не пустой
+
         if (dto.getPhone() != null && !dto.getPhone().isBlank() && !dto.getPhone().equals("string")) {
             user.setPhone(dto.getPhone());
         }

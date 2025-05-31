@@ -18,7 +18,7 @@ public class ReactionMapper {
     public Reaction convertToEntity(ReactionDTO reactionDTO) {
         Reaction reaction = new Reaction();
         reaction.setId(reactionDTO.getId());
-        // Тип будет установлен в сервисе
+
         return reaction;
     }
 }

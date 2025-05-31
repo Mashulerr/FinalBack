@@ -13,7 +13,7 @@ public class ErrorResponse {
     private String message;
     private LocalDateTime timestamp;
 
-    // Упрощенный конструктор
+
     public ErrorResponse(int status, String message) {
         this.status = status;
         this.message = message;

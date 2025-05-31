@@ -41,7 +41,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<ArticleDTO> getAllArticles() {
-        // Получаем текущего пользователя (может быть null если не аутентифицирован)
+
         Long currentUserId = UserUtils.getCurrentUser_id();
         User currentUser = currentUserId != null ?
                 userService.getUserEntityById(currentUserId) :
@@ -52,7 +52,7 @@ public class ArticleServiceImpl implements ArticleService {
                     User author = article.getUser();
                     ArticleDTO dto = ArticleMapper.convertToDto(article, author);
 
-                    // Проверяем, находится ли статья в избранном у текущего пользователя
+
                     if (currentUser != null) {
                         try {
                             boolean isFavorite = favoriteArticleService.existsByUserIdAndArticleId(
@@ -61,7 +61,7 @@ public class ArticleServiceImpl implements ArticleService {
                             );
                             dto.setFavorite(isFavorite);
                         } catch (Exception e) {
-                            // Логирование ошибки
+
                             dto.setFavorite(false);
                         }
                     } else {
@@ -89,7 +89,7 @@ public class ArticleServiceImpl implements ArticleService {
         User author = article.getUser();
         ArticleDTO dto = ArticleMapper.convertToDto(article, author);
 
-        // Проверка избранного с обработкой возможных ошибок
+
         try {
             Long currentUserId = UserUtils.getCurrentUser_id();
             if (currentUserId != null) {
@@ -99,7 +99,7 @@ public class ArticleServiceImpl implements ArticleService {
                 dto.setFavorite(false);
             }
         } catch (Exception e) {
-            // Логирование ошибки
+
             dto.setFavorite(false);
         }
 

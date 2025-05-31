@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class FavoriteArticleServiceImpl implements FavoriteArticleService {
     private final FavoriteArticleRepository favoriteArticleRepository;
     private final UserService userService;
-    private final ArticleRepository articleRepository; // Заменяем ArticleService на репозиторий
+    private final ArticleRepository articleRepository;
 
     @Override
     public void addToFavorites(Long userId, Long articleId) {
@@ -57,8 +57,8 @@ public class FavoriteArticleServiceImpl implements FavoriteArticleService {
                     User author = article.getUser();
                     ArticleDTO dto = ArticleMapper.convertToDto(article, author);
 
-                    // Явно устанавливаем флаг избранности в true
-                    dto.setFavorite(true);  // Все статьи в этом списке по определению избранные
+
+                    dto.setFavorite(true);
 
                     return dto;
                 })
